@@ -4,14 +4,12 @@ sidebar_position: 2
 
 # Database backups
 
-:::info
-
-Users, folders and filenames have been renamed from "dashboard" ⇒ "controlpanel". Be aware that the provided commands may not fit your installation. Please change the users, folder and filenames for the commands corresponding to your installation.
-
-:::
-
 All important data is stored in the database. This includes all servers, users, and other information.  
 It's important to keep backups of your database to ensure that you can restore your panel if something goes wrong.
+
+import TOCInline from '@theme/TOCInline';
+
+<TOCInline toc={toc} />
 
 ### How to back up
 
@@ -47,6 +45,13 @@ exit
 mysql -u root -p controlpanel < /var/www/controlpanel/backup.sql
 ```
 
+If you have a backup from an older version of ControlPanel, you have to migrate the database to the latest version.
+
+```bash
+cd /var/www/controlpanel
+sudo php artisan migrate --seed --force
+```
+
 ### How to automatically backup
 
 You can automatically back up your database every day at midnight, for example.
@@ -70,3 +75,17 @@ Run `crontab -e` and add the following line:
 
 This will create a backup at /var/www/controlpanel/backups-$(date +\%F).sql every day at midnight.
 Every file will have the date when it was made in the filename, so you can also resolve issues that happened a few days ago.
+
+## Appliaction key
+The application key is used to encrypt the data in the database, if its lost you will not be able to decrypt the data in the database.
+
+### Backup the application key
+To backup the appliaction key you need to get it from the .env file
+you can get there with this command:
+```nano /var/www/controlpanel/.env```
+keep this key safe you will need later!
+
+### Restore the application key
+After you have reinstalled the panel go back into the .env
+```nano /var/www/controlpanel/.env```
+You can then change the new key with the old key!

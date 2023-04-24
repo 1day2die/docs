@@ -4,10 +4,9 @@ sidebar_position: 5
 
 # Updating
 
-:::info
-
-Users, folders and filenames have been renamed from "dashboard" ⇒ "controlpanel". Be aware that the provided commands may not fit your installation. Please change the users, folder and filenames for the commands corresponding to your installation.
-
+:::caution
+This guide is for updates 0.9.0 -> 0.9.X
+If you update from 0.8.X or older, please follow our 0.9 update guide. (Version dropdown top right)
 :::
 
 ### Enable Maintenance Mode
@@ -70,3 +69,10 @@ sudo php artisan queue:restart
 ```bash
 sudo php artisan up
 ```
+
+## Disclaimer
+
+Warning, The dashboard is currently in pre-release and may contain some bugs 🐛 <br/>
+Use This dashboard at your own risk.
+
+If you notice any bugs or would like something to be improved or added, let us know by making a [GitHub Issue](https://github.com/ControlPanel-gg/dashboard/issues/new/choose)<br /> **for any major security risk, contact** _1Day2Die#6718_

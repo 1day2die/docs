@@ -3,17 +3,6 @@ sidebar_position: 1
 ---
 
 # Getting started
-:::warning
-**DO NOT USE - DO NOT USE - DO NOT USE - DO NOT USE - DO NOT USE**
-
-
-THESE DOCS ARE NOT FOR USE AS OF YET.
-
-PLEASE REFER TO THE v0.8 DOCS.
-
-VERSION 1.0 IS NOT RELEASED YET AND THESE DOCS ARE JUST A PLACEHOLDER
-
-:::
 
 :::info
 
@@ -21,10 +10,9 @@ It is recommended that you have some sort of Linux and MariaDB experience before
 
 :::
 
-:::info
+:::warning
 
-If you already have Controlpanel Installed and want to Upgrade to v1.0 please refer to "Upgrading from v0.8"
-
+Warning, The dashboard is currently in pre-release and may contain some bugs. Use This dashboard at your own risk.
 
 :::
 
@@ -46,6 +34,7 @@ import TOCInline from '@theme/TOCInline';
 
 ### Example Dependency Installation
 
+_If you already have Pterodactyl installed, please check that you also install PHP 8.1!_
 
 The commands below are simply an example of how you might install these dependencies. Please consult with your
 operating system's package manager to determine the correct packages to install.
@@ -54,9 +43,8 @@ operating system's package manager to determine the correct packages to install.
 # Add "add-apt-repository" command
 apt -y install software-properties-common curl apt-transport-https ca-certificates gnupg
 
-# Add additional repositories for PHP, Redis, and MariaDB
+# Add additional repositories for PHP, Redis, and MariaDB (for Debian 11 and Ubuntu 22.04)
 LC_ALL=C.UTF-8 add-apt-repository -y ppa:ondrej/php
-add-apt-repository -y ppa:chris-lea/redis-server
 curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash
 
 # Update repositories list
@@ -65,10 +53,18 @@ apt update
 # Add universe repository if you are on Ubuntu 18.04
 apt-add-repository universe
 
-# Install Dependencies
-apt -y install php8.1 php8.1-{cli,gd,mysql,pdo,mbstring,tokenizer,bcmath,xml,fpm,curl,zip,intl} mariadb-server nginx tar unzip git redis-server
+# Install Dependencies 
+apt -y install php8.1 php8.1-{cli,gd,mysql,pdo,mbstring,tokenizer,bcmath,xml,fpm,curl,zip} mariadb-server nginx tar unzip git redis-server
 ```
 
+### Extra Dependency Used on this Dashboard
+
+You need to install this, use the appropriate PHP version (php -v)
+Extra dependency used for handling currency's
+
+```bash
+apt -y install php8.1-intl
+```
 
 ### Installing Composer
 
@@ -81,7 +77,6 @@ need composer installed before continuing in this process.
 curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
 ```
 
-
 ## Download Files
 
 The first step in this process is to create the folder where the panel will live and then move ourselves into that
@@ -92,16 +87,15 @@ mkdir -p /var/www/controlpanel && cd /var/www/controlpanel
 ```
 
 ```bash
-git clone https://github.com/AVMG20/controlpanel.git ./
+git clone https://github.com/ControlPanel-gg/dashboard.git ./
 ```
-
 
 ## Basic Setup
 
 Now that all the files have been downloaded we need to configure some core aspects of the Panel.
 
->**You will need a database setup and a database user with the correct permissions created for that database before**
->**continuing any further.**
+**You will need a database setup and a database user with the correct permissions created for that database before**
+**continuing any further.**
 
 ### Database Setup
 
@@ -117,7 +111,6 @@ FLUSH PRIVILEGES;
 EXIT;
 ```
 
-
 ## Web server Configuration
 
 You should paste the contents of the file below, replacing `<domain>` with your domain name being used in a file called controlpanel.conf and place it in `/etc/nginx/sites-available/`, or — if on CentOS, `/etc/nginx/conf.d/.`
@@ -128,6 +121,7 @@ You should paste the contents of the file below, replacing `<domain>` with your 
 cd /etc/nginx/sites-available/
 nano controlpanel.conf
 ```
+
 ### Example Nginx Config
 
 ```nginx
@@ -143,7 +137,7 @@ server {
 
         location ~ \.php$ {
                 include snippets/fastcgi-php.conf;
-                fastcgi_pass unix:/var/run/php/php8.0-fpm.sock;
+                fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
         }
 
         location ~ /\.ht {
@@ -180,19 +174,14 @@ sudo apt install -y python3-certbot-nginx
 sudo certbot --nginx -d yourdomain.com
 ```
 
-
 ## Panel Installation
 
-First, we will have to install all composer packages and populate our Database.
-For this, navigate into your `/var/www/controlpanel` again and run the following commands
+First, we will have to install all composer packages.
+For this, navigate into your `/var/www/controlpanel` again and run the following command
 
 ```bash
-php artisan key:generate
-php artisan migrate --seed --force
-php artisan storage:link
 composer install --no-dev --optimize-autoloader
 ```
-
 
 ### Set Permissions
 
@@ -217,35 +206,14 @@ chmod -R 755 storage/* bootstrap/cache/
 
 Once this is done, you should be able to access the dashboard via your web browser.
 
-### Connect Pterodactyl
+### Running the installer
 
-To Connect your Pterodactyl Instance run the following commmand
+#### Navigate to `https://yourdomain.com/install` to run the Web-Installer and follow the steps.
 
-```bash
-cd /var/www/controlpanel
-php artisan s:pterodactyl:link
-```
+If you encounter problems with the email setup, you can use the skip button and set it up later.
 
-This will ask you for your Pterodactyl URL (https://your.ptero.com)<br/>
-and also for your Pterodactyl API Key (https://your.ptero.com/admin/api)
-
-**MAKE SURE THE KEY HAS ALL PERMISSIONS SET TO "READ & WRITE"!**
-
-Once your Pterodactyl Instance is successfully connected, we can sync the Nodes, Eggs and Nests by running
-
-```bash
-php artisan s:pterodactyl:sync
-```
-
-###First admin User
-Now lets create yourself! This is easily done by running
-```bash
-s:user:create
-```
-
-The Console will ask for your Pterodactyl ID (which is usually 1). <br/>
-You can grab that ID from your Userlist on Pterodactyl<br/>
-Input your desired Password and the first user is ready to log-in!
+Once the Web-Installer has been completed, you will be navigated to the login-page of your installation.<br />
+#### Don't forget to complete the steps listed below here.
 
 ## Queue Listeners
 
